@@ -18,20 +18,32 @@ var time_before_next_episode=10;  //if less than *time_before_next_episode* seco
 var nexturl="";
 (function() {
 	'use strict';
+	var vid;
 	if(location.href.indexOf("https://bs.to/serie")>-1){
 		mainpage();
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
 
-	}else if(location.href.indexOf("https://openload.co/embed/")>-1){
-		var vid=document.getElementById("olvideo_html5_api");
-		checkvideo(vid);
+	}else if(location.href.indexOf("https://openload.co/embed/")>-1){ //works for openload and openloadhd
+		checkvideo(document.getElementById("olvideo_html5_api"));
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
-           //in progress getting the video elements of each hoster
+		
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
-
-	}else if(location.href.indexOf("https://bs.to/out/")>-1){
-
+		//in progress getting the video elements of each hoster
+	}else if(location.href.indexOf("https://thevideo.me/embed")>-1){
+		function check(){
+			if(document.getElementsByClassName("jw-controlbar jw-background-color jw-reset")[0]){
+				checkvideo(document.getElementsByClassName("jw-controlbar jw-background-color jw-reset")[0]);
+			}else{
+				setTimeout(check,2000);
+			}
+		}
+		setTimeout(check,2000);
+	}else if(location.href.indexOf("https://streamango.com/embed/")>-1){
+		checkvideo(document.getElementById("mgvideo_html5_api"));
+	}else if(location.href.indexOf("facebook")>-1||location.href.indexOf("recaptcha")>-1){
+		return;
 	}else{
+		//debugger;
 		return;
 	}
 	// Your code here...
@@ -46,31 +58,52 @@ function mainpage(){
 		}
 	}
 	function setnext(){
-	if(nexturl!==""){
-		location.href=nexturl;
+		if(nexturl!==""){
+			location.href=nexturl;
+		}
 	}
-}
+	function chooselink(hoster){
+		var embededhoster=["OpenLoad","TheVideo","Streamango"];
+		var hostername=location.href.split("/");
+		hostername=hostername[hostername.length-1];
+		var found=false;
+		for(var j in hoster){
+			if(hoster[j].className.indexOf(hostername)>-1){
+				found=true;
+				nexturl=hoster[j].href;
+				break;
+			}
+		}
+		if(!found){
+			for(var k in hoster){
+				for(var m in embededhoster){
+					if(hoster[k].className.indexOf(embededhoster[m])>-1){
+						found=true;
+						nexturl=hoster[k].href;
+						break;
+					}
+				}
+				if(found){
+					break;
+				}
+			}
+		}
+		if(!found){
+			if(hosters[0]){
+				nexturl=hosters[0].href;
+			}
+		}
+	}
 	window.top.addEventListener("message", receiveMessage, false);
 	setTimeout(function getnexturl(){
 		var episodes=document.getElementsByClassName("clearfix")[1].children;
 		var episodesinfo=document.getElementsByClassName("episodes")[0].children;
 		for(var i=0;i<episodes.length;i++){
 			if(episodes[i].className==="active"){
-				var hostername=location.href.split("/");
-				hostername=hostername[hostername.length-1];
+
 				if(i+1<episodes.length){
 					var hoster=episodesinfo[i+3+1].children;
-					var found=false;
-					for(var j in hoster){
-						if(hoster[j].className.indexOf(hostername)>-1){
-							found=true;
-							nexturl=hoster[j].href;
-							break;
-						}
-					}
-					if(!found){
-						nexturl=hosters[0].href;
-					}
+					chooselink(hoster);
 				}else{
 					var series=document.getElementsByClassName("clearfix")[0].children;
 					for(var k=0;k<series.length;k++){
@@ -83,17 +116,7 @@ function mainpage(){
 								iFrameReady(iframe, function(a,b){
 									var nextepisode=a.contentDocument.getElementsByClassName("episodes")[0].children[0].children[0];
 									var hosters=nextepisode.children[2].children;
-									var found=false;
-									for(var l=0;l<hosters.length;l++){
-										if(hosters[l].className.indexOf(hostername)>-1){
-											found=true;
-											nexturl=hosters[l].href;
-											break;
-										}
-									}
-									if(!found){
-										nexturl=hosters[0].href;
-									}
+									chooselink(hosters);
 									iframe.remove();
 								}, true);
 							}else{
@@ -113,6 +136,7 @@ function checkvideo(vid) {
 	if (vid) {
 		var current = vid.currentTime;
 		var dur = vid.duration;
+		debugger;
 		if (current === undefined) {
 			var times = vid.innerText.split("\n");
 			times[0] = times[0].split(":");
