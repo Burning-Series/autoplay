@@ -26,7 +26,7 @@ var nexturl="";
 	}else if(location.href.indexOf("https://openload.co/embed/")>-1){ //works for openload and openloadhd
 		checkvideo(document.getElementById("olvideo_html5_api"));
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
-		
+
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
 		//in progress getting the video elements of each hoster
 	}else if(location.href.indexOf("https://thevideo.me/embed")>-1){
@@ -41,7 +41,15 @@ var nexturl="";
 	}else if(location.href.indexOf("https://streamango.com/embed/")>-1){
 		checkvideo(document.getElementById("mgvideo_html5_api"));
 	}else if(location.href.indexOf("facebook")>-1||location.href.indexOf("recaptcha")>-1){
-		return;
+		if(location.href.indexOf("www.google.com/recaptcha/api2")>-1){
+			setTimeout(function () {
+				try{
+				document.getElementsByClassName("recaptcha-checkbox-checkmark")[0].click();
+				}catch(e){
+					
+				}
+			}, 500);
+		}
 	}else{
 		//debugger;
 		return;
@@ -136,7 +144,6 @@ function checkvideo(vid) {
 	if (vid) {
 		var current = vid.currentTime;
 		var dur = vid.duration;
-		debugger;
 		if (current === undefined) {
 			var times = vid.innerText.split("\n");
 			times[0] = times[0].split(":");
