@@ -25,6 +25,10 @@ var nexturl="";
 
 	}else if(location.href.indexOf("https://openload.co/embed/")>-1){ //works for openload and openloadhd
 		checkvideo(document.getElementById("olvideo_html5_api"));
+		setTimeout(function(){
+			debugger;
+			//document.getElementsByClassName("vjs-big-play-button")[0].click();
+		},1000);
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
 
 	}else if(location.href.indexOf("https://bs.to/out/")>-1){
@@ -44,7 +48,7 @@ var nexturl="";
 		if(location.href.indexOf("www.google.com/recaptcha/api2")>-1){
 			setTimeout(function () {
 				try{
-				document.getElementsByClassName("recaptcha-checkbox-checkmark")[0].click();
+					document.getElementsByClassName("recaptcha-checkbox-checkmark")[0].click();
 				}catch(e){
 					
 				}
@@ -151,7 +155,6 @@ function checkvideo(vid) {
 			current = (times[0][0] * 60) - 0 + (times[0][1] - 0);
 			dur = (times[1][0] * 60) - 0 + (times[1][1] - 0);
 		}
-
 		if (current > dur - time_before_next_episode && dur > 100) {
 			window.top.postMessage({target:"https://bs.to/serie",msg:"next"},"*");
 		} else {
